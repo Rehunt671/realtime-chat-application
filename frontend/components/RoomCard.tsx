@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
+import { Room } from 'types/room';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
-// Modal component
 const Modal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
@@ -28,54 +30,44 @@ const Modal = ({ isOpen, onClose, onConfirm }) => {
   );
 };
 
-const RoomCard = ({ room, deleteRoom }) => {
-  const currentUserId = undefined; 
+interface RoomCardProps {
+  room: Room;
+}
 
+const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDeleteClick = (e) => {
-    e.preventDefault(); 
-    setIsModalOpen(true); 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsModalOpen(true);
   };
 
   const handleDeleteConfirm = () => {
-    deleteRoom(room.id); 
+    alert(`Room ${room.id} deleted`);
     setIsModalOpen(false);
   };
 
   const handleModalClose = () => {
-    setIsModalOpen(false); 
+    setIsModalOpen(false);
   };
 
+  const handleEnterRoom = () => {
+  }
   return (
     <>
       <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-100">
-        <Link href={`/room/${room.id}`}>
+        <Link onClick={handleEnterRoom} href={`/room/${room.id}`}>
           <div className="p-6">
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">{room.name || "Name"} </h3>
-
+            <h3 className="text-2xl font-semibold text-gray-800 mb-2">{room.name }</h3>
             <div className="flex justify-between items-center mt-6">
-              <span className="text-sm text-gray-500">Created by: {room.creatorName}</span>
-
-              {room.creatorId === currentUserId && (
+              <span className="text-sm text-gray-500">Created by: {room.createdBy.username}</span>
+              {room.createdBy.username === "user.username" && (
                 <button
                   onClick={handleDeleteClick}
                   className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                  aria-label="Delete Room"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="h-6 w-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
+                  <FontAwesomeIcon icon={faTrashAlt} className="h-4 w-4" />
                 </button>
               )}
             </div>
