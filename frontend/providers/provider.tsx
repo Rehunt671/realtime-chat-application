@@ -1,5 +1,5 @@
 import React from "react";
-import { Provider as ReduxProvider, useSelector } from "react-redux";
+import { Provider as ReduxProvider } from "react-redux";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import store from "stores/store";
 

@@ -1,19 +1,26 @@
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+import { useReducer, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useLogin } from "api/user";
+import { useDispatch } from "react-redux";
+import { setUser } from "stores/slices/userSlice";
 
 const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState<string>('');
-  const [error, setError] = useState<string>('');
+  const loginMutation = useLogin();
+  const dispatch = useDispatch();
+  const [username, setUsername] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim() === '') {
-      setError('Username is required!');
+    if (username.trim() === "") {
+      setError("Username is required!");
     } else {
-      setError('');
-      router.push('/dashboard');
+      setError("");
+      const data = await loginMutation.mutateAsync({ username });
+      dispatch(setUser(data));
+      router.push("/dashboard");
     }
   };
 
@@ -29,7 +36,12 @@ const LoginPage: React.FC = () => {
         <form onSubmit={handleLogin}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-lg font-medium text-gray-700 mb-2">Username</label>
+              <label
+                htmlFor="username"
+                className="block text-lg font-medium text-gray-700 mb-2"
+              >
+                Username
+              </label>
               <input
                 type="text"
                 id="username"
@@ -41,7 +53,9 @@ const LoginPage: React.FC = () => {
               />
             </div>
 
-            {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
 
             <button
               type="submit"

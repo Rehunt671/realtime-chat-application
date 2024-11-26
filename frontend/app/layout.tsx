@@ -12,8 +12,7 @@ interface RootLayoutProps {
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
-  let user = null;
-
+  const user = null;
   useEffect(() => {
     if (!user) {
       router.push("/login");
@@ -26,7 +25,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
     <html lang="en">
       <body>
         <AppProvider>
-          {!isLoginPage && <Navbar user={user} />}
+          {!isLoginPage && <Navbar />}
           <main>{children}</main>
         </AppProvider>
       </body>
