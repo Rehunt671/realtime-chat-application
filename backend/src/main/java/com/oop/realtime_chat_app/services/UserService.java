@@ -12,8 +12,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    public User upsertUser(User user) {
-        return userRepository.upsertUser(user);
+    public User login(String username) {
+        return userRepository.login(username);
     }
 
     public User getUser(String username) {

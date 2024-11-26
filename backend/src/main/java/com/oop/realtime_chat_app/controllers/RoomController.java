@@ -20,11 +20,6 @@ public class RoomController {
         return roomService.createRoom(room);
     }
 
-    @GetMapping("/list")
-    public List<Room> getUserRooms(@RequestBody User user) {
-        return roomService.getUserRooms(user);
-    }
-
     @GetMapping("/{roomId}")
     public Room getRoom(@PathVariable String roomId) {
         return roomService.getRoomById(roomId);

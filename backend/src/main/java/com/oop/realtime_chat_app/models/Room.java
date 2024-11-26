@@ -13,7 +13,6 @@ import java.util.List;
 public class Room {
     private String roomId;
     private String roomName;
-//    private List<User> joiningUsers = new ArrayList<>();
     private List<ChatMessage> messages = new ArrayList<>();
     private User createdBy;
 }

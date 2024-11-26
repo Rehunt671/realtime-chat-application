@@ -20,10 +20,6 @@ public class RoomService {
         return roomRepository.save(room);
     }
 
-    public List<Room> getUserRooms(User user) {
-        return roomRepository.findByUser(user);
-    }
-
     public Room getRoomById(String roomId) {
         return roomRepository.findById(roomId)
                 .orElseThrow(() -> new RoomNotFoundException("Room not found with id: " + roomId));

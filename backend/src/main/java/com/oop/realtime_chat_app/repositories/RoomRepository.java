@@ -25,13 +25,4 @@ public class RoomRepository {
                 .findFirst();
     }
 
-    public LinkedList<Room> findByUser(User user) {
-        LinkedList<Room> userRooms = new LinkedList<>();
-        for (Room room : rooms) {
-            if (room.getJoiningUsers().contains(user)) {
-                userRooms.add(room);
-            }
-        }
-        return userRooms;
-    }
 }

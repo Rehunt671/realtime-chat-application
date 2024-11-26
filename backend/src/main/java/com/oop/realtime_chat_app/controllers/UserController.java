@@ -11,9 +11,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/upsert")
-    public User upsertUser(@RequestBody User user) {
-        return userService.upsertUser(user);
+    @PostMapping("/login")
+    public User login(@RequestBody User user) {
+        return userService.login(user.getUsername());
     }
 
     // Get a user by username

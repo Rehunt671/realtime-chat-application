@@ -3,6 +3,9 @@ package com.oop.realtime_chat_app.models;
 
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -10,5 +13,5 @@ import lombok.*;
 @Builder
 public class User {
     private String username;
-    private Room currentRoom = null;
+    private List<User> joiningRooms = new ArrayList<>();
 }
