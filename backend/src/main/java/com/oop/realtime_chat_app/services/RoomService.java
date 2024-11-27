@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RoomService {
     private static int roomIDIncrement = 1;
-
     private final UserService userService;
     private final RoomRepository roomRepository;
 
@@ -30,7 +29,11 @@ public class RoomService {
     }
 
     public Room getRoomById(int roomId) {
-        return roomRepository.findById(roomId)
-                .orElseThrow(() -> new RoomNotFoundException("Room not found with id: " + roomId));
+        return roomRepository.findById(roomId);
+    }
+
+    public void deleteRoomById(int roomId) {
+        userService.leaveRoom(roomId);
+        roomRepository.deleteRoomById(roomId);
     }
 }

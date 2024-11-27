@@ -1,4 +1,4 @@
-package com.oop.realtime_chat_app.controllers.websocket;
+package com.oop.realtime_chat_app.controllers;
 
 import com.oop.realtime_chat_app.dtos.RoomBody;
 import com.oop.realtime_chat_app.models.Room;

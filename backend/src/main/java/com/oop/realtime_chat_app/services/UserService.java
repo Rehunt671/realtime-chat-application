@@ -25,6 +25,9 @@ public class UserService {
 
     public User joinRoom(String username, Room room) {
         User user = userRepository.getUser(username);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found: " + username);
+        }
 
         List<Room> joiningRooms = user.getJoiningRooms();
         joiningRooms.add(room);
@@ -34,7 +37,13 @@ public class UserService {
         return updateUser(user);
     }
 
+    public void leaveRoom(int roomId) {
+         userRepository.deleteJoiningRoom(roomId);
+    }
+
     public List<Room> getUserRooms(String username) {
         return userRepository.getUserRooms(username);
     }
+
+
 }

@@ -6,6 +6,7 @@ import com.oop.realtime_chat_app.models.User;
 import org.springframework.stereotype.Repository;
 
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,5 +31,13 @@ public class UserRepository {
     public List<Room> getUserRooms(String username) {
         User user = getUser(username);
         return user.getJoiningRooms();
+    }
+
+    public void deleteJoiningRoom(int roomId) {
+        for (User user : userDatabase.values()) {
+            List<Room> joiningRooms = user.getJoiningRooms();
+            joiningRooms.removeIf(joinedRoom -> joinedRoom.getId() == roomId);
+            user.setJoiningRooms(new ArrayList<>(joiningRooms));
+        }
     }
 }
