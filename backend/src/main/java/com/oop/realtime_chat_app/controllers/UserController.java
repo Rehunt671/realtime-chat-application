@@ -1,7 +1,7 @@
 package com.oop.realtime_chat_app.controllers;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
-d import com.oop.realtime_chat_app.services.UserService;
+import com.oop.realtime_chat_app.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

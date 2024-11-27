@@ -1,8 +1,5 @@
 package com.oop.realtime_chat_app.models;
-
-
 import lombok.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
