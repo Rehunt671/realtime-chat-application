@@ -1,21 +1,15 @@
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import axiosClient from "libs/axios";
 import { User } from "types/user";
 
-interface LoginData {
-  username: string;
-}
-
-export const useLogin = () => {
-  return useMutation({
-    mutationFn: async (loginData: LoginData) => {
-      const response = await axios.post<User>(
-        "http://localhost:8080/users/login",
-        {
-          loginData,
-        }
-      );
-      return response;
+export const useQueryGetUser = (username: string) => {
+  return useQuery<User>({
+    queryKey: ["user", username],
+    queryFn: async () => {
+      const response = await axiosClient.get(`/users`, {
+        params: { username },
+      });
+      return response.data;
     },
   });
 };

@@ -1,31 +1,34 @@
-'use client';
+"use client";
+import { useMutationCreateRoom } from "api/room";
 import { useState } from "react";
 import { Room } from "types/room";
 
 const initialMessages = [
-  { id: 1, user: 'Alice', message: 'Hello, how are you?' },
-  { id: 2, user: 'Bob', message: 'I am good, thanks! How about you?' },
+  { id: 1, user: "Alice", message: "Hello, how are you?" },
+  { id: 2, user: "Bob", message: "I am good, thanks! How about you?" },
 ];
 
 const ChatRoom: React.FC = () => {
-  const [messages, setMessages] = useState(initialMessages); 
-  const [newMessage, setNewMessage] = useState('');  
+  const createRoomMutation = useMutationCreateRoom();
+  const getQuery; = useQueryGetRooms();
+  const [messages, setMessages] = useState(initialMessages);
+  const [newMessage, setNewMessage] = useState("");
   const room = null;
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const newMessageObj = {
         id: messages.length + 1,
-        user: 'You',  
+        user: "You",
         message: newMessage,
       };
       setMessages((prevMessages) => [...prevMessages, newMessageObj]);
-      setNewMessage('');  
+      setNewMessage("");
     }
   };
 
   const handleCopyRoomID = () => {
     navigator.clipboard.writeText(room.id).then(() => {
-      alert('Room ID copied to clipboard');
+      alert("Room ID copied to clipboard");
     });
   };
 

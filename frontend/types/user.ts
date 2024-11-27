@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { Room } from "./room";
 
-export const UserSchema = z.object({
-  username: z.string(),
-});
-
-export type User = z.infer<typeof UserSchema>;
+export interface User {
+  username: string;
+  joiningRooms: Room[];
+  currentRoom: Room | null;
+}

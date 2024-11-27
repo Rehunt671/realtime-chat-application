@@ -1,13 +1,14 @@
 "use client";
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useLogin } from "api/user";
 import { useDispatch } from "react-redux";
 import { setUser } from "stores/slices/userSlice";
+import { useMutationLogin } from "api/auth";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const LoginPage: React.FC = () => {
-  const loginMutation = useLogin();
   const dispatch = useDispatch();
+  const loginMutation = useMutationLogin();
   const [username, setUsername] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
@@ -18,8 +19,9 @@ const LoginPage: React.FC = () => {
       setError("Username is required!");
     } else {
       setError("");
-      const data = await loginMutation.mutateAsync({ username });
-      dispatch(setUser(data));
+      const authBody = { username };
+      const user = await loginMutation.mutateAsync(authBody);
+      dispatch(setUser(user));
       router.push("/dashboard");
     }
   };

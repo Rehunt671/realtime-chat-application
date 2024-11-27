@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import "./globals.css";
 import Navbar from "../components/Navbar";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import AppProvider from "providers/provider";
 
 interface RootLayoutProps {
@@ -10,15 +10,7 @@ interface RootLayoutProps {
 }
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
-  const router = useRouter();
   const pathname = usePathname();
-  const user = null;
-  useEffect(() => {
-    if (!user) {
-      router.push("/login");
-    }
-  }, [user]);
-
   const isLoginPage = pathname === "/login";
 
   return (

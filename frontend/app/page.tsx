@@ -1,11 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 
-const HomePage: React.FC = () => {
-  return (
-    <></>
-  );
+const App: React.FC = () => {
+  return <></>;
 };
 
-export default HomePage;
+export default App;
