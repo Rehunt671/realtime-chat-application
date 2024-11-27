@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Modal from "../modals/Modal";
 import { useMutationCreateRoom } from "api/room";
 import { useSelector } from "react-redux";

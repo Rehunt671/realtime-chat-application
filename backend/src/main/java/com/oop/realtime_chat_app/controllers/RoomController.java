@@ -1,4 +1,4 @@
-package com.oop.realtime_chat_app.controllers;
+package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.dtos.RoomBody;
 import com.oop.realtime_chat_app.models.Room;
@@ -20,5 +20,10 @@ public class RoomController {
     @GetMapping("/{roomId}")
     public Room getRoom(@PathVariable int roomId) {
         return roomService.getRoomById(roomId);
+    }
+
+    @DeleteMapping("/{roomId}")
+    public void deleteRoom(@PathVariable int roomId) {
+         roomService.deleteRoomById(roomId);
     }
 }

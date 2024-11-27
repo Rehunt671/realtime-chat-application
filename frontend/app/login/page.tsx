@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUser } from "stores/slices/userSlice";
 import { useMutationLogin } from "api/auth";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();

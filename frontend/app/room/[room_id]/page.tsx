@@ -1,7 +1,5 @@
 "use client";
-import { useMutationCreateRoom } from "api/room";
 import { useState } from "react";
-import { Room } from "types/room";
 
 const initialMessages = [
   { id: 1, user: "Alice", message: "Hello, how are you?" },
@@ -9,8 +7,6 @@ const initialMessages = [
 ];
 
 const ChatRoom: React.FC = () => {
-  const createRoomMutation = useMutationCreateRoom();
-  const getQuery; = useQueryGetRooms();
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const room = null;

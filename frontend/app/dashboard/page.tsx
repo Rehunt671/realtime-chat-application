@@ -1,9 +1,9 @@
 "use client";
-
 import CreateRoomButton from "@/components/buttons/CreateRoomButton";
 import JoinRoomButton from "@/components/buttons/JoinRoomButton";
 import RoomCard from "@/components/RoomCard";
 import { useQueryGetUser } from "api/user";
+import { useEffect } from "react";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 
@@ -12,6 +12,9 @@ const Dashboard: React.FC = () => {
   const { data } = useQueryGetUser(userBody.username);
   const userRooms = data?.joiningRooms || [];
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 p-8 items-center">
       <div className="max-w-4xl mx-auto space-y-8 pt-16">

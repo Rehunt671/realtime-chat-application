@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
+import { useMutationDeleteRoom } from "api/room";
 
 const Modal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -39,6 +40,7 @@ interface RoomCardProps {
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
+  const deleteRoomMutation = useMutationDeleteRoom();
   const userBody = useAppSelector(selectUser);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -47,7 +49,8 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
+    await deleteRoomMutation.mutateAsync(room.id);
     alert(`Room ${room.id} deleted`);
     setIsModalOpen(false);
   };

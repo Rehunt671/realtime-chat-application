@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
 
         <div className="text-lg text-gray-800">
           <span className="font-semibold">Hello, </span>
-          <span className="text-blue-500">{undefined}</span>
+          <span className="text-blue-500">{user?.username}</span>
         </div>
       </div>
     </nav>
