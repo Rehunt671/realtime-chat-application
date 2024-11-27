@@ -9,7 +9,7 @@ import java.nio.file.FileStore;
 @NoArgsConstructor
 @Builder
 public class ChatMessage {
-    private int chatMessageId;
+    private int id;
     private String content;
     private String sender;
     private MessageType type;

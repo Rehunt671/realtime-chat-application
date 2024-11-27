@@ -13,5 +13,6 @@ import java.util.List;
 @Builder
 public class User {
     private String username;
-    private List<User> joiningRooms = new ArrayList<>();
+    private Room currentRoom;
+    private List<Room> joiningRooms = new ArrayList<>();
 }

@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class Room {
-    private String roomId;
-    private String roomName;
+    private int id;
+    private String name;
     private List<ChatMessage> messages = new ArrayList<>();
-    private User createdBy;
+    private String createdBy;
 }

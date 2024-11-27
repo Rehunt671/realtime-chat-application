@@ -9,3 +9,4 @@ public class RealtimeChatAppApplication {
 		SpringApplication.run(RealtimeChatAppApplication.class, args);
 	}
 }
+	

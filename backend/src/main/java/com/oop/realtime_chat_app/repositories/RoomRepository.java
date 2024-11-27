@@ -12,16 +12,16 @@ import java.util.Optional;
 @Repository
 public class RoomRepository {
 
-    private List<Room> rooms = new ArrayList<>();
+    private final List<Room> rooms = new ArrayList<>();
 
     public Room save(Room room) {
         rooms.add(room);
         return room;
     }
 
-    public Optional<Room> findById(String roomId) {
+    public Optional<Room> findById(int roomId) {
         return rooms.stream()
-                .filter(room -> room.getRoomId().equals(roomId))
+                .filter(room -> room.getId() == roomId)
                 .findFirst();
     }
 

@@ -1,5 +1,6 @@
 package com.oop.realtime_chat_app.configs;
 import com.oop.realtime_chat_app.models.ChatMessage;
+import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,23 +16,28 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
-    @Autowired
-    private UserService userService;
-
     private final SimpMessageSendingOperations messagingTemplate;
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
-        if (username != null) {
-            log.info("user disconnected: {}", username);
+        User user = (User) headerAccessor.getSessionAttributes().get("user");
+
+        if (user != null) {
+            String username = user.getUsername();
+            int roomId = user.getCurrentRoom().getId();
+
+            log.info("User disconnected: {}", username);
+
             var chatMessage = ChatMessage.builder()
                     .type(ChatMessage.MessageType.LEAVE)
                     .sender(username)
                     .build();
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+
+            // Publish the message to the specific room topic.
+            messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), chatMessage);
         }
     }
+
 
 }
