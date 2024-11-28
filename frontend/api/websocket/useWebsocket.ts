@@ -1,63 +1,66 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useEffect } from "react";
 import SockJS from "sockjs-client";
-import Stomp from "stompjs";
+import Stomp, { Client } from "stompjs"; // Add Stomp types
 import {
   selectWebsocket,
   setConnectionStatus,
   setWebSocketClient,
 } from "stores/slices/websocketSlice";
+import { setUser } from "stores/slices/userSlice";
+import { useAppSelector } from "stores/hook";
 
 export const useWebSocket = () => {
   const dispatch = useDispatch();
-  const { client, isConnected } = useSelector(selectWebsocket);
+  const { client, isConnected } = useAppSelector(selectWebsocket);
+  const serverUrl = process.env.API_BASE_URL;
 
-  const subscribeToTopic = useCallback(
-    (topic: string, callback: (message: string) => void) => {
-      if (client && isConnected) {
-        const subscription = client.subscribe(topic, (frame) => {
-          const message = frame.body;
-          callback(message);
-        });
-
-        return subscription;
-      }
-    },
-    [client, isConnected]
-  );
-
-  useEffect(() => {
-    if (!client) {
-      const socket = new SockJS("/ws"); // WebSocket endpoint
-      const stompClient = Stomp.over(socket);
-
-      stompClient.connect({}, () => {
-        console.log("WebSocket connected");
-        dispatch(setWebSocketClient(stompClient));
-        dispatch(setConnectionStatus(true));
-      });
-
-      return () => {
-        if (stompClient.connected) {
-          stompClient.disconnect(() => {
-            console.log("WebSocket disconnected");
-            dispatch(setConnectionStatus(false));
-          });
-        }
-      };
-    }
-  }, [client, dispatch]);
-
-  const sendMessage = (destination: string, message: string) => {
+  const sendMessage = (destination: string, message) => {
     if (client && isConnected) {
-      client.send(destination, {}, message);
+      client.send(`/app${destination}`, {}, JSON.stringify(message));
     }
   };
 
+  const connect = () => {
+    try {
+      const socket = new SockJS(`${serverUrl}/ws`);
+      const stompClient = Stomp.over(socket);
+      stompClient.connect({}, () => onConnected(stompClient));
+      stompClient.debug = () => {};
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const onConnected = (stompClient: Stomp.Client) => {
+    console.log("Web socket is connected");
+    stompClient.subscribe("/topic/getUser", onGetUser);
+    stompClient.subscribe("/topic/createRoom", onCreateRoom);
+    stompClient.subscribe("/topic/deleteRoom", onDeleteRoom);
+    dispatch(setWebSocketClient(stompClient));
+    dispatch(setConnectionStatus(true));
+  };
+
+  const onGetUser = (payload: Stomp.Message) => {
+    const userDatabase = JSON.parse(payload.body);
+    const username = localStorage.getItem("username");
+    dispatch(setUser(userDatabase[username]));
+  };
+
+  const onCreateRoom = (payload: Stomp.Message) => {
+    const userDatabase = JSON.parse(payload.body);
+    const username = localStorage.getItem("username");
+    dispatch(setUser(userDatabase[username]));
+  };
+
+  const onDeleteRoom = (payload: Stomp.Message) => {
+    const userDatabase = JSON.parse(payload.body);
+    const username = localStorage.getItem("username");
+    dispatch(setUser(userDatabase[username]));
+  };
+
   return {
-    client,
+    connect,
     isConnected,
     sendMessage,
-    subscribeToTopic,
   };
 };

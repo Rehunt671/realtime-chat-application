@@ -1,4 +1,4 @@
-package com.oop.realtime_chat_app.services;
+package com.oop.realtime_chat_app.services.rest;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.repositories.UserRepository;
@@ -12,15 +12,15 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User updateUser(User user) {
-        return userRepository.updateUser(user);
+    public void updateUser(User user) {
+        userRepository.updateUser(user);
     }
 
     public User getUser(String username) {
         return userRepository.getUser(username);
     }
 
-    public User joinRoom(String username, Room room) {
+    public void joinRoom(String username, Room room) {
         User user = userRepository.getUser(username);
         if (user == null) {
             throw new IllegalArgumentException("User not found: " + username);
@@ -31,7 +31,7 @@ public class UserService {
 
         user.setJoiningRooms(joiningRooms);
 
-        return updateUser(user);
+        updateUser(user);
     }
 
     public void leaveRoom(int roomId) {

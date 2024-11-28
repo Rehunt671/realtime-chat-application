@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import Modal from "../modals/Modal";
 import { useMutationCreateRoom } from "api/room";
-import { useSelector } from "react-redux";
 import { selectUser } from "stores/slices/userSlice";
+import { useAppSelector } from "stores/hook";
+import { useWebSocket } from "api/websocket/useWebsocket";
 
 interface CreateRoomButtonProps {
   text: string;
 }
 
 const CreateRoomButton: React.FC<CreateRoomButtonProps> = ({ text }) => {
-  const createRoomMutation = useMutationCreateRoom();
-  const user = useSelector(selectUser);
+  const { sendMessage } = useWebSocket();
+  const user = useAppSelector(selectUser);
   const [roomName, setRoomName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,7 +28,7 @@ const CreateRoomButton: React.FC<CreateRoomButtonProps> = ({ text }) => {
 
     const createRoomBody = { name: roomName, createdBy: user.username };
     try {
-      await createRoomMutation.mutateAsync(createRoomBody);
+      sendMessage("/createRoom", createRoomBody);
       setRoomName("");
       setIsModalOpen(false);
     } catch (error) {

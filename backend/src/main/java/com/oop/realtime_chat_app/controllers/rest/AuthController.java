@@ -1,8 +1,8 @@
-package com.oop.realtime_chat_app.controllers;
+package com.oop.realtime_chat_app.controllers.rest;
 
 import com.oop.realtime_chat_app.dtos.AuthBody;
 import com.oop.realtime_chat_app.models.User;
-import com.oop.realtime_chat_app.services.AuthService;
+import com.oop.realtime_chat_app.services.rest.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

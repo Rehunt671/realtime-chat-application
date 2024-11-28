@@ -1,8 +1,8 @@
-package com.oop.realtime_chat_app.controllers;
+package com.oop.realtime_chat_app.controllers.rest;
 
 import com.oop.realtime_chat_app.dtos.RoomBody;
 import com.oop.realtime_chat_app.models.Room;
-import com.oop.realtime_chat_app.services.RoomService;
+import com.oop.realtime_chat_app.services.rest.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

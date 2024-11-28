@@ -2,19 +2,25 @@
 import CreateRoomButton from "@/components/buttons/CreateRoomButton";
 import JoinRoomButton from "@/components/buttons/JoinRoomButton";
 import RoomCard from "@/components/RoomCard";
-import { useQueryGetUser } from "api/user";
+import { useWebSocket } from "api/websocket/useWebsocket";
+import { redirect } from "next/navigation";
 import { useEffect } from "react";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 
 const Dashboard: React.FC = () => {
-  const userBody = useAppSelector(selectUser);
-  const { data } = useQueryGetUser(userBody.username);
-  const userRooms = data?.joiningRooms || [];
+  const { connect, isConnected, sendMessage } = useWebSocket();
+  const user = useAppSelector(selectUser);
+  const userRooms = user?.joiningRooms || [];
 
   useEffect(() => {
-    console.log(data);
-  }, [data]);
+    connect();
+  }, []);
+
+  useEffect(() => {
+    sendMessage("/getUser", {});
+  }, [isConnected]);
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 p-8 items-center">
       <div className="max-w-4xl mx-auto space-y-8 pt-16">
@@ -36,12 +42,13 @@ const Dashboard: React.FC = () => {
             My Rooms
           </h2>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userRooms.map((room, index) => (
-              <li key={index} className="space-y-4">
-                <RoomCard room={room} />
-              </li>
-            ))}
-            {userRooms.length === 0 && (
+            {userRooms.length > 0 ? (
+              userRooms.map((room, index) => (
+                <li key={index} className="space-y-4">
+                  <RoomCard room={room} />
+                </li>
+              ))
+            ) : (
               <div className="col-span-full text-center py-12 bg-card rounded-lg border border-gray-300 shadow-sm">
                 <p className="text-muted-foreground">
                   No rooms yet. Create or join one to get started!

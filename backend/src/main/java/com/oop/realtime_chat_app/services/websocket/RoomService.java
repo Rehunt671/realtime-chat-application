@@ -1,7 +1,6 @@
-package com.oop.realtime_chat_app.services;
+package com.oop.realtime_chat_app.services.rest;
 
 import com.oop.realtime_chat_app.dtos.RoomBody;
-import com.oop.realtime_chat_app.exceptions.room.RoomNotFoundException;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.repositories.RoomRepository;
 import lombok.RequiredArgsConstructor;

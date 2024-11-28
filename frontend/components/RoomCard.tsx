@@ -6,6 +6,7 @@ import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 import { useMutationDeleteRoom } from "api/room";
+import { useWebSocket } from "api/websocket/useWebsocket";
 
 const Modal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -40,7 +41,7 @@ interface RoomCardProps {
 }
 
 const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
-  const deleteRoomMutation = useMutationDeleteRoom();
+  const { sendMessage } = useWebSocket();
   const userBody = useAppSelector(selectUser);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -50,7 +51,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   };
 
   const handleDeleteConfirm = async () => {
-    await deleteRoomMutation.mutateAsync(room.id);
+    sendMessage("/deleteRoom", room.id);
     alert(`Room ${room.id} deleted`);
     setIsModalOpen(false);
   };

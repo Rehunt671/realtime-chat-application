@@ -1,13 +1,18 @@
 "use client";
 
-import { redirect } from "next/navigation";
-import { useAppSelector } from "stores/hook";
-import { selectUser } from "stores/slices/userSlice";
-
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 const App = () => {
-  const user = useAppSelector(selectUser);
-  if (user) redirect("/dashboard");
-  else redirect("/login");
+  const router = useRouter();
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (!username) {
+      router.push("/login");
+    } else {
+      router.push("/dashboard");
+    }
+  }, [router]);
 };
 
 export default App;

@@ -19,9 +19,14 @@ const LoginPage: React.FC = () => {
     } else {
       setError("");
       const authBody = { username };
-      const user = await loginMutation.mutateAsync(authBody);
-      dispatch(setUser(user));
-      router.push("/dashboard");
+      try {
+        const user = await loginMutation.mutateAsync(authBody);
+        dispatch(setUser(user));
+        localStorage.setItem("username", username);
+        router.push("/dashboard");
+      } catch (error) {
+        setError("Login failed. Please try again.");
+      }
     }
   };
 
