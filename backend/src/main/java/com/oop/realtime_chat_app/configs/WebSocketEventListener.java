@@ -1,10 +1,8 @@
 package com.oop.realtime_chat_app.configs;
 import com.oop.realtime_chat_app.models.ChatMessage;
 import com.oop.realtime_chat_app.models.User;
-import com.oop.realtime_chat_app.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;

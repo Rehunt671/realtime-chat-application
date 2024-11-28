@@ -1,29 +1,40 @@
-package com.oop.realtime_chat_app.controllers.rest;
+package com.oop.realtime_chat_app.controllers.websocket;
 
+import com.oop.realtime_chat_app.db.Database;
 import com.oop.realtime_chat_app.dtos.RoomBody;
 import com.oop.realtime_chat_app.models.Room;
-import com.oop.realtime_chat_app.services.rest.RoomService;
+import com.oop.realtime_chat_app.models.User;
+import com.oop.realtime_chat_app.services.websocket.RoomService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
-@RestController
-@RequestMapping("/rooms")
+import java.util.Map;
+
+@Controller
 @RequiredArgsConstructor
 public class RoomController {
+
     private final RoomService roomService;
 
-    @PostMapping("")
-    public Room createRoom(@RequestBody RoomBody roomBody) {
-        return roomService.createRoom(roomBody);
+    @MessageMapping("/createRoom")
+    @SendTo("/topic/createRoom")
+    public Map<String, User> createRoom(RoomBody roomBody) {
+        roomService.createRoom(roomBody);
+        return Database.getInstance().getUserDatabase();
     }
 
-    @GetMapping("/{roomId}")
-    public Room getRoom(@PathVariable int roomId) {
+    @MessageMapping("/getRoom")
+    @SendTo("/topic/getRoom")
+    public Room getRoom(int roomId) {
         return roomService.getRoomById(roomId);
     }
 
-    @DeleteMapping("/{roomId}")
-    public void deleteRoom(@PathVariable int roomId) {
-         roomService.deleteRoomById(roomId);
+    @MessageMapping("/deleteRoom")
+    @SendTo("/topic/deleteRoom")
+    public Map<String, User> deleteRoom(int roomId) {
+        roomService.deleteRoomById(roomId);
+        return Database.getInstance().getUserDatabase();
     }
 }

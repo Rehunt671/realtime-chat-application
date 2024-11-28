@@ -1,4 +1,4 @@
-package com.oop.realtime_chat_app.services;
+package com.oop.realtime_chat_app.services.rest;
 
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.repositories.AuthRepository;

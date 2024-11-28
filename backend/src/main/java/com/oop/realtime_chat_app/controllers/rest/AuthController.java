@@ -1,5 +1,4 @@
 package com.oop.realtime_chat_app.controllers.rest;
-
 import com.oop.realtime_chat_app.dtos.AuthBody;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.rest.AuthService;

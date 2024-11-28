@@ -1,31 +1,39 @@
-package com.oop.realtime_chat_app.controllers.rest;
+package com.oop.realtime_chat_app.controllers.websocket;
+
+import com.oop.realtime_chat_app.db.Database;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
-import com.oop.realtime_chat_app.services.rest.UserService;
+import com.oop.realtime_chat_app.services.websocket.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 
-@RestController
-@RequestMapping("/users")
+@Controller
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PutMapping("")
-    public void updateUser(@RequestBody User user){
+    @MessageMapping("/updateUser")
+    @SendTo("/topic/updateUser")
+    public User updateUser(User user) {
         userService.updateUser(user);
+        return user;
     }
 
-    @GetMapping("")
-    public User getUser(@RequestParam String username) {
-        return userService.getUser(username);
+    @MessageMapping("/getUser")
+    @SendTo("/topic/getUser")
+    public Map<String, User> getUser() {
+        return Database.getInstance().getUserDatabase();
     }
 
-    @GetMapping("/rooms")
-    public List<Room> getUserRooms(@RequestParam String username) {
+    @MessageMapping("/getUserRooms")
+    @SendTo("/topic/userRooms")
+    public List<Room> getUserRooms(String username) {
         return userService.getUserRooms(username);
     }
 }

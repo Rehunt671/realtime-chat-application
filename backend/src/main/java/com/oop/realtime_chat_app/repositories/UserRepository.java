@@ -5,9 +5,7 @@ import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
