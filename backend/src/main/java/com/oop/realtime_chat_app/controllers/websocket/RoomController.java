@@ -1,13 +1,14 @@
 package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.db.Database;
-import com.oop.realtime_chat_app.dtos.RoomBody;
+import com.oop.realtime_chat_app.dtos.CreateRoomBody;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.websocket.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
@@ -15,14 +16,15 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class RoomController {
-
+    private final SimpMessageSendingOperations messagingTemplate;
     private final RoomService roomService;
 
     @MessageMapping("/createRoom")
-    @SendTo("/topic/createRoom")
-    public Map<String, User> createRoom(RoomBody roomBody) {
+    public void createRoom(CreateRoomBody roomBody) {
+        String username = roomBody.getCreatedBy();
+        User user = Database.getInstance().getUserDatabase().get(username);
         roomService.createRoom(roomBody);
-        return Database.getInstance().getUserDatabase();
+        messagingTemplate.convertAndSendToUser(username, "topic/createRoom", user);
     }
 
     @MessageMapping("/getRoom")

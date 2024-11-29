@@ -13,11 +13,11 @@ import java.util.Map;
 public class UserRepository {
     private final Map<String, User> userDatabase = Database.getInstance().getUserDatabase();
 
-    public User updateUser(User updatedUser) {
+    public void updateUser(User updatedUser) {
         String username = updatedUser.getUsername();
         if (userDatabase.containsKey(username)) {
             userDatabase.put(username, updatedUser);
-            return updatedUser;
+            return;
         }
         throw new IllegalArgumentException("User not found: " + username);
     }

@@ -16,6 +16,7 @@ export const useWebSocket = () => {
 
   const sendMessage = (destination: string, message) => {
     if (client && isConnected) {
+      console.log("send", {...message});
       client.send(`/app${destination}`, {}, JSON.stringify(message));
     }
   };
@@ -31,25 +32,39 @@ export const useWebSocket = () => {
     }
   };
 
+
+  const disconnect = () => {
+    if (client && isConnected) {
+      client.disconnect(() => {
+        console.log("WebSocket disconnected");
+        dispatch(setConnectionStatus(false));
+        dispatch(setWebSocketClient(null));
+      });
+    } else {
+      console.log("No active WebSocket connection to disconnect.");
+    }
+  };
+
   const onConnected = (stompClient: Stomp.Client) => {
     console.log("Web socket is connected");
-    stompClient.subscribe("/topic/getUser", onGetUser);
-    stompClient.subscribe("/topic/createRoom", onCreateRoom);
+    const username = localStorage.getItem("username");
+    stompClient.subscribe(`/user/${username}/topic/getMe`, onGetMe);
+    stompClient.subscribe(`/user/${username}/topic/createRoom`, onCreateRoom);
     stompClient.subscribe("/topic/deleteRoom", onDeleteRoom);
     dispatch(setWebSocketClient(stompClient));
     dispatch(setConnectionStatus(true));
   };
 
-  const onGetUser = (payload: Stomp.Message) => {
-    const userDatabase = JSON.parse(payload.body);
-    const username = localStorage.getItem("username");
-    dispatch(setUser(userDatabase[username]));
+  const onGetMe = (payload: Stomp.Message) => {
+    const user = JSON.parse(payload.body);
+    console.log(user)
+    dispatch(setUser(user));
   };
 
   const onCreateRoom = (payload: Stomp.Message) => {
-    const userDatabase = JSON.parse(payload.body);
-    const username = localStorage.getItem("username");
-    dispatch(setUser(userDatabase[username]));
+    const user = JSON.parse(payload.body);
+    console.log(user)
+    dispatch(setUser(user));
   };
 
   const onDeleteRoom = (payload: Stomp.Message) => {
@@ -60,6 +75,7 @@ export const useWebSocket = () => {
 
   return {
     connect,
+    disconnect,
     isConnected,
     sendMessage,
   };

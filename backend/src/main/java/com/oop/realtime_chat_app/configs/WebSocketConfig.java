@@ -1,5 +1,4 @@
 package com.oop.realtime_chat_app.configs;
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.*;
@@ -15,7 +14,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        registry.enableSimpleBroker("/topic", "/user" );
+        registry.setUserDestinationPrefix("/user");
         registry.setApplicationDestinationPrefixes("/app");
     }
 }

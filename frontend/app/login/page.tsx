@@ -1,17 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { setUser } from "stores/slices/userSlice";
 import { useMutationLogin } from "api/auth";
+import { useWebSocket } from "api/websocket/useWebsocket";
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
+  const {disconnect} = useWebSocket()
   const loginMutation = useMutationLogin();
   const [username, setUsername] = useState<string>("");
   const [error, setError] = useState<string>("");
   const router = useRouter();
 
+  useEffect(()=>{
+    disconnect()
+  },[])
+  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() === "") {

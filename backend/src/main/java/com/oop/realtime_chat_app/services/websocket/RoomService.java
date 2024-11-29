@@ -1,6 +1,6 @@
 package com.oop.realtime_chat_app.services.websocket;
 
-import com.oop.realtime_chat_app.dtos.RoomBody;
+import com.oop.realtime_chat_app.dtos.CreateRoomBody;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.repositories.RoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ public class RoomService {
     private final UserService userService;
     private final RoomRepository roomRepository;
 
-    public Room createRoom(RoomBody roomBody) {
+    public Room createRoom(CreateRoomBody roomBody) {
         Room room = Room.builder()
                 .id(roomIDIncrement++)
                 .name(roomBody.getName())

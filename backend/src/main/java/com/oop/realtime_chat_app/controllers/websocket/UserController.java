@@ -1,12 +1,15 @@
 package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.db.Database;
+import com.oop.realtime_chat_app.dtos.GetUserBody;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.websocket.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -15,7 +18,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class UserController {
-
+    private final SimpMessageSendingOperations messagingTemplate;
     private final UserService userService;
 
     @MessageMapping("/updateUser")
@@ -25,10 +28,11 @@ public class UserController {
         return user;
     }
 
-    @MessageMapping("/getUser")
-    @SendTo("/topic/getUser")
-    public Map<String, User> getUser() {
-        return Database.getInstance().getUserDatabase();
+    @MessageMapping("/getMe")
+    public void getMe(GetUserBody getRoomBody) {
+        String username = getRoomBody.getUsername();
+        User user = Database.getInstance().getUserDatabase().get(username);
+        messagingTemplate.convertAndSendToUser(username, "/topic/getMe", user);
     }
 
     @MessageMapping("/getUserRooms")

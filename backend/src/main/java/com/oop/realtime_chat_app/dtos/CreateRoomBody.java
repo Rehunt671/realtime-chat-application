@@ -1,6 +1,5 @@
 package com.oop.realtime_chat_app.dtos;
 
-import com.oop.realtime_chat_app.models.User;
 import lombok.*;
 
 
@@ -10,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoomBody {
+public class CreateRoomBody {
     private String name;
     private String createdBy;
 }
