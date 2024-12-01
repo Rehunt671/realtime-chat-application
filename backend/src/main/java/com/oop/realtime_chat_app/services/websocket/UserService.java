@@ -12,6 +12,9 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
+    public User getUser(String username){
+        return  userRepository.getUser(username);
+    }
     public void updateUser(User user) {
         userRepository.updateUser(user);
     }
@@ -22,10 +25,10 @@ public class UserService {
             throw new IllegalArgumentException("User not found: " + username);
         }
 
-        List<Room> joiningRooms = user.getJoiningRooms();
+        List<Room> joiningRooms = user.getEnteredRooms();
         joiningRooms.add(room);
 
-        user.setJoiningRooms(joiningRooms);
+        user.setEnteredRooms(joiningRooms);
 
         updateUser(user);
     }

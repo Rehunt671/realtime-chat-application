@@ -28,14 +28,17 @@ public class UserRepository {
 
     public List<Room> getUserRooms(String username) {
         User user = getUser(username);
-        return user.getJoiningRooms();
+        return user.getEnteredRooms();
     }
 
     public void deleteJoiningRoom(int roomId) {
         for (User user : userDatabase.values()) {
-            List<Room> joiningRooms = user.getJoiningRooms();
-            joiningRooms.removeIf(joinedRoom -> joinedRoom.getId() == roomId);
-            user.setJoiningRooms(new ArrayList<>(joiningRooms));
+            List<Room> enteredRooms = user.getEnteredRooms();
+            // Remove the room with the matching ID
+            enteredRooms.removeIf(room -> room.getId() == roomId);
+            // If there is a setter for enteredRooms, use it, otherwise directly update the list
+            user.setEnteredRooms(new ArrayList<>(enteredRooms));
         }
     }
+
 }

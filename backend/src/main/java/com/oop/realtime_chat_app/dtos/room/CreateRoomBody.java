@@ -1,4 +1,4 @@
-package com.oop.realtime_chat_app.dtos;
+package com.oop.realtime_chat_app.dtos.room;
 
 import lombok.*;
 
