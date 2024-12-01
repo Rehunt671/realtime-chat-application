@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Modal from "../modals/Modal";
-import { useMutationCreateRoom } from "api/room";
 import { selectUser } from "stores/slices/userSlice";
 import { useAppSelector } from "stores/hook";
 import { useWebSocket } from "api/websocket/useWebsocket";

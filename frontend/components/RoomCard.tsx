@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
-import { useMutationDeleteRoom } from "api/room";
 import { useWebSocket } from "api/websocket/useWebsocket";
 
 const Modal = ({ isOpen, onClose, onConfirm }) => {
@@ -47,12 +46,12 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    setIsModalOpen(true);
+    e.stopPropagation();
+    setIsModalOpen(true); 
   };
-
+  
   const handleDeleteConfirm = async () => {
     sendMessage("/deleteRoom", room.id);
-    alert(`Room ${room.id} deleted`);
     setIsModalOpen(false);
   };
 
@@ -60,11 +59,21 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     setIsModalOpen(false);
   };
 
-  const handleEnterRoom = () => {};
+  const handleJoinRoom = async (e: React.MouseEvent) => {
+    const joinRoomBody = { roomId: room.id, joinedBy: userBody.username };
+    try {
+      sendMessage("/joinRoom", joinRoomBody);
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Error joining room. Please try again.");
+    }
+  };
+  
+
   return (
     <>
       <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:scale-105 hover:bg-blue-100">
-        <Link onClick={handleEnterRoom} href={`/room/${room.id}`}>
+        <Link onClick={handleJoinRoom} href={`/room/${room.id}`}>
           <div className="p-6">
             <h3 className="text-2xl font-semibold text-gray-800 mb-2">
               {room.name}
@@ -74,13 +83,15 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                 Created by: {room.createdBy}
               </span>
               {room.createdBy === userBody.username && (
-                <button
-                  onClick={handleDeleteClick}
-                  className="text-red-500 hover:text-red-700 transition-colors duration-200"
-                  aria-label="Delete Room"
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} className="h-4 w-4" />
-                </button>
+                <div>
+                  <button
+                    onClick={handleDeleteClick}
+                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                    aria-label="Delete Room"
+                  >
+                    <FontAwesomeIcon icon={faTrashAlt} className="h-4 w-4" />
+                  </button>
+                </div>
               )}
             </div>
           </div>

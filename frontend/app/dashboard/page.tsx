@@ -1,28 +1,14 @@
 "use client";
 import CreateRoomButton from "@/components/buttons/CreateRoomButton";
-import JoinRoomButton from "@/components/buttons/JoinRoomButton";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import EnterRoomButton from "@/components/buttons/EnterRoomButton";
+import LogoutButton from "@/components/buttons/LogoutButton";
 import RoomCard from "@/components/RoomCard";
-import { useWebSocket } from "api/websocket/useWebsocket";
-import { useEffect } from "react";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 
 const Dashboard: React.FC = () => {
-  const { connect, isConnected, sendMessage } = useWebSocket();
   const user = useAppSelector(selectUser);
-  const userRooms = user?.joiningRooms || [];
-
-  useEffect(() => {
-    connect();
-  }, []);
-
-  useEffect(() => {
-    const username = localStorage.getItem("username");
-    sendMessage("/getMe", username);
-  }, [isConnected]);
-
-  if(!isConnected) return <LoadingSpinner/>
+  const userRooms = user?.enteredRooms || [];
   
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 p-8 items-center">
@@ -37,7 +23,8 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <CreateRoomButton text="Create Room" />
-          <JoinRoomButton text="Join Room" />
+          <EnterRoomButton text="Enter Room" />
+          <LogoutButton text="Logout" />
         </div>
 
         <div className="mt-8">

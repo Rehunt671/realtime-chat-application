@@ -1,6 +1,6 @@
 // chat_message.ts
 export interface ChatMessage {
-  type: "CHAT" | "LEAVE" | "JOIN";
+  type: "ENTER" | "JOIN" | "CHAT" | "LEAVE" | "EXIT";
   id: number;
   text: string;
   sender: string;

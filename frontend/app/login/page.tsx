@@ -1,35 +1,20 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { setUser } from "stores/slices/userSlice";
-import { useMutationLogin } from "api/auth";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useState } from "react";
+import { useAuth } from "hooks/useAuth"; // Import the custom hook
 
 const LoginPage: React.FC = () => {
-  const dispatch = useDispatch();
-  const {disconnect} = useWebSocket()
-  const loginMutation = useMutationLogin();
+  const { login } = useAuth(); 
   const [username, setUsername] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const router = useRouter();
 
-  useEffect(()=>{
-    disconnect()
-  },[])
-  
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() === "") {
       setError("Username is required!");
     } else {
       setError("");
-      const authBody = { username };
       try {
-        const user = await loginMutation.mutateAsync(authBody);
-        dispatch(setUser(user));
-        localStorage.setItem("username", username);
-        router.push("/dashboard");
+        await login(username);
       } catch (error) {
         setError("Login failed. Please try again.");
       }
@@ -64,7 +49,6 @@ const LoginPage: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
               />
             </div>
-
             {error && (
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}

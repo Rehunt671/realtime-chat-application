@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import Modal from "../modals/Modal";
+import { useWebSocket } from "api/websocket/useWebsocket";
+import { selectUser } from "stores/slices/userSlice";
+import { useAppSelector } from "stores/hook";
 
-interface JoinRoomButtonProps {
+interface EnterRoomButtonProps {
   text: string;
 }
 
-const JoinRoomButton: React.FC<JoinRoomButtonProps> = ({ text }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const EnterRoomButton: React.FC<EnterRoomButtonProps> = ({ text }) => {
+  const { sendMessage } = useWebSocket();
+  const user = useAppSelector(selectUser);
   const [roomId, setRoomId] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleClick = () => {
     setIsModalOpen(true);
@@ -17,11 +22,24 @@ const JoinRoomButton: React.FC<JoinRoomButtonProps> = ({ text }) => {
     setIsModalOpen(false);
   };
 
-  const handleJoinRoom = () => {
-    if (roomId.trim()) {
-      alert(`Joining Room: ${roomId}`);
+  const handleEnterRoom = () => {
+    if (!user) {
+      alert("User is not authenticated.");
+      return;
+    }
+
+    if (!roomId.trim()) {
+      alert("Room id cannot be empty");
+      return;
+    }
+
+    const enterRoomBody = {roomId: roomId , enteredBy: user.username}
+    try {
+      sendMessage("/enterRoom", enterRoomBody);
       setRoomId("");
       setIsModalOpen(false);
+    } catch (error) {
+      alert("Error enter room. Please try again.");
     }
   };
 
@@ -50,12 +68,12 @@ const JoinRoomButton: React.FC<JoinRoomButtonProps> = ({ text }) => {
 
       {isModalOpen && (
         <Modal
-          title="Join Room"
-          actionText="Join"
+          title="Enter Room"
+          actionText="Enter"
           placeHolder="Enter Room ID"
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          onSubmit={handleJoinRoom}
+          onSubmit={handleEnterRoom}
           input={roomId}
           setInput={setRoomId}
         />
@@ -64,4 +82,4 @@ const JoinRoomButton: React.FC<JoinRoomButtonProps> = ({ text }) => {
   );
 };
 
-export default JoinRoomButton;
+export default EnterRoomButton;

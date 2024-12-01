@@ -1,13 +1,14 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import SockJS from "sockjs-client";
-import Stomp, { Client } from "stompjs"; // Add Stomp types
+import Stomp from "stompjs";
 import {
   selectWebsocket,
   setConnectionStatus,
   setWebSocketClient,
-} from "stores/slices/websocketSlice";
-import { setUser } from "stores/slices/userSlice";
+} from "stores/slices/webSocketSlice";
+import { selectUser, setUser } from "stores/slices/userSlice";
 import { useAppSelector } from "stores/hook";
+import { redirect } from "next/navigation";
 
 export const useWebSocket = () => {
   const dispatch = useDispatch();
@@ -21,11 +22,11 @@ export const useWebSocket = () => {
     }
   };
 
-  const connect = () => {
+  const connect = (username:string) => {
     try {
       const socket = new SockJS(`${serverUrl}/ws`);
       const stompClient = Stomp.over(socket);
-      stompClient.connect({}, () => onConnected(stompClient));
+      stompClient.connect({}, () => onConnected(stompClient,username));
       stompClient.debug = () => {};
     } catch (e) {
       console.log(e);
@@ -45,25 +46,45 @@ export const useWebSocket = () => {
     }
   };
 
-  const onConnected = (stompClient: Stomp.Client) => {
+  const onConnected = (stompClient: Stomp.Client , username:string) => {
     console.log("Web socket is connected");
-    const username = localStorage.getItem("username");
     stompClient.subscribe(`/user/${username}/topic/getMe`, onGetMe);
     stompClient.subscribe(`/user/${username}/topic/createRoom`, onCreateRoom);
+    stompClient.subscribe(`/user/${username}/topic/enterRoom`, onEnterRoom);
+    stompClient.subscribe(`/user/${username}/topic/joinRoom`, onJoinRoom);
     stompClient.subscribe("/topic/deleteRoom", onDeleteRoom);
     dispatch(setWebSocketClient(stompClient));
     dispatch(setConnectionStatus(true));
   };
 
   const onGetMe = (payload: Stomp.Message) => {
-    const user = JSON.parse(payload.body);
-    console.log(user)
-    dispatch(setUser(user));
+    try {
+        const response = JSON.parse(payload.body);
+
+        if (response.error) {
+            console.warn(response.error);
+            redirect('/login');
+        }
+
+        dispatch(setUser(response));
+    } catch (error) {
+        console.error("Failed to parse payload body:", error);
+        redirect('/login');
+    }
   };
 
   const onCreateRoom = (payload: Stomp.Message) => {
     const user = JSON.parse(payload.body);
-    console.log(user)
+    dispatch(setUser(user));
+  };
+
+  const onJoinRoom = (payload: Stomp.Message) => {
+    const user = JSON.parse(payload.body);
+    dispatch(setUser(user));
+  };
+
+  const onEnterRoom = (payload: Stomp.Message) => {
+    const user = JSON.parse(payload.body);
     dispatch(setUser(user));
   };
 

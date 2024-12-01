@@ -1,5 +1,8 @@
 "use client";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useState } from "react";
+import { useAppSelector } from "stores/hook";
+import { selectUser } from "stores/slices/userSlice";
 
 const initialMessages = [
   { id: 1, user: "Alice", message: "Hello, how are you?" },
@@ -9,7 +12,9 @@ const initialMessages = [
 const ChatRoom: React.FC = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [newMessage, setNewMessage] = useState("");
-  const room = null;
+  const user = useAppSelector(selectUser);
+  const room = user.currentRoom;
+
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       const newMessageObj = {
@@ -23,11 +28,12 @@ const ChatRoom: React.FC = () => {
   };
 
   const handleCopyRoomID = () => {
-    navigator.clipboard.writeText(room.id).then(() => {
+    navigator.clipboard.writeText(room.id.toString()).then(() => {
       alert("Room ID copied to clipboard");
     });
   };
-
+  
+  if(!room) return <LoadingSpinner/>
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 items-center pt-24 p-8">
       {/* Chat Room Content */}
