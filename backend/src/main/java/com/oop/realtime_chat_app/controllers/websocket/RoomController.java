@@ -2,8 +2,10 @@ package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.db.Database;
 import com.oop.realtime_chat_app.dtos.room.CreateRoomBody;
+import com.oop.realtime_chat_app.dtos.room.DeleteRoomBody;
 import com.oop.realtime_chat_app.dtos.room.EnterRoomBody;
 import com.oop.realtime_chat_app.dtos.room.JoinRoomBody;
+import com.oop.realtime_chat_app.models.ChatMessage;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.websocket.RoomService;
@@ -14,6 +16,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -33,32 +36,38 @@ public class RoomController {
 
     @MessageMapping("/enterRoom")
     public void enterRoom(EnterRoomBody enteredRoomBody) {
-        //หา User เพื่อจะนำ User enter เข้าห้องแชทจากการ ใช้ room ID
         String username = enteredRoomBody.getEnteredBy();
         User user = userService.getUser(username);
-        //หาห้องเพื่อจะนำ User เข้าห้องแชท
         int roomId = enteredRoomBody.getRoomId();
-        Room room = roomService.getRoomById(roomId);
-        roomService.enterRoom(user,room);
-        //publish ตัวเองว่า Enter ห้องใหม่แล้ว
-        messagingTemplate.convertAndSendToUser(username, "/topic/enterRoom", user);
-        // publish คนที่อยู่ในห้องนั้นๆ ว่ามีคนใหม่เข้ามาแล้ว
-        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
+
+        try {
+            // Call the refactored method in RoomService
+            Room room = roomService.enterRoom(user, roomId);
+
+            // Notify the user that they entered the room
+            messagingTemplate.convertAndSendToUser(username, "/topic/enterRoom", user);
+
+            // Notify all participants in the room
+            messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
+        } catch (IllegalArgumentException e) {
+            messagingTemplate.convertAndSendToUser(username, "/topic/error", Map.of("message", e.getMessage()));
+        }
     }
+
     @MessageMapping("/joinRoom")
     public void joinRoom(JoinRoomBody joinedRoomBody) {
-        //หา User เพื่อจะนำ User เพื่อเข้าร่วมการแชท
+        int roomId = joinedRoomBody.getRoomId();
         String username = joinedRoomBody.getJoinedBy();
         User user = userService.getUser(username);
-        //หาห้องเพื่อจะนำ User เข้าห้องแชท
-        int roomId = joinedRoomBody.getRoomId();
         Room room = roomService.getRoomById(roomId);
-        roomService.joinRoom(user,room);
-        //publish ตัวเองว่า Enter ห้องใหม่แล้ว
+
+        // Call the refactored joinRoom method in RoomService
+        roomService.joinRoom(user, room);
+        // Notify the user and other participants
         messagingTemplate.convertAndSendToUser(username, "/topic/joinRoom", user);
-        // publish คนที่อยู่ในห้องนั้นๆ ว่ามีคนใหม่เข้ามาแล้ว
         messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
     }
+
 
     @MessageMapping("/getRoom")
     @SendTo("/topic/getRoom")
@@ -68,8 +77,16 @@ public class RoomController {
 
     @MessageMapping("/deleteRoom")
     @SendTo("/topic/deleteRoom")
-    public Map<String, User> deleteRoom(int roomId) {
+    public Map<String, User> deleteRoom(DeleteRoomBody deleteRoomBody) {
+        int roomId = deleteRoomBody.getRoomId();
+        String username = deleteRoomBody.getDeletedBy();
+
         roomService.deleteRoomById(roomId);
+
+        Map<String, Boolean> roomDeletedMessage = Map.of(
+                "status" , true
+        );
+        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), roomDeletedMessage);
         return Database.getInstance().getUserDatabase();
     }
 }

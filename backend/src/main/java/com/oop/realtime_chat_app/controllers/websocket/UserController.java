@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
@@ -20,24 +21,26 @@ public class UserController {
     private final UserService userService;
 
     @MessageMapping("/updateUser")
-    @SendTo("/topic/updateUser")
-    public User updateUser(User user) {
+    public void updateUser(User user) {
+        String username = user.getUsername();
         userService.updateUser(user);
-        return user;
+        messagingTemplate.convertAndSendToUser(username, "/topic/updateUser", user);
     }
 
+
+
     @MessageMapping("/getMe")
+    @SendToUser("/topic/getMe")
     public void getMe(GetUserBody getUserBody) {
         String username = getUserBody.getUsername();
         User user = userService.getUser(username);
-
         if (user == null) {
             messagingTemplate.convertAndSendToUser(username, "/topic/getMe", Map.of("error", "User not found"));
             return;
         }
-
         messagingTemplate.convertAndSendToUser(username, "/topic/getMe", user);
     }
+
     @MessageMapping("/getUserRooms")
     @SendTo("/topic/userRooms")
     public List<Room> getUserRooms(String username) {

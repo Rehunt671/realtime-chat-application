@@ -1,7 +1,7 @@
 package com.oop.realtime_chat_app.models;
-import lombok.*;
 
-import java.nio.file.FileStore;
+import lombok.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -13,8 +13,9 @@ public class ChatMessage {
     private String text;
     private String sender;
     private MessageType type;
+    private LocalDateTime datetime = LocalDateTime.now();
 
     public enum MessageType {
-        ENTER , JOIN, CHAT, LEAVE , EXIT
+        CREATE, ENTER, JOIN, CHAT, LEAVE, EXIT
     }
 }

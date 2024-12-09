@@ -11,10 +11,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
     public User getUser(String username){
         return  userRepository.getUser(username);
     }
+
     public void updateUser(User user) {
         userRepository.updateUser(user);
     }

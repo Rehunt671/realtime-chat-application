@@ -34,7 +34,7 @@ public class WebSocketEventListener {
             List<ChatMessage> chatMessages = room.getMessages();
             log.info("User disconnected: {}", username);
 
-            var leaveMessage = ChatMessage.builder()
+            ChatMessage leaveMessage = ChatMessage.builder()
                     .text(user.getUsername() + " has leaved the room")
                     .type(ChatMessage.MessageType.LEAVE)
                     .sender(username)

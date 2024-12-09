@@ -12,6 +12,6 @@ public class AuthService {
     private final AuthRepository authRepository;
 
     public User login(String username) {
-        return authRepository.login(username);
+       return  authRepository.login(username);
     }
 }

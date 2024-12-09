@@ -8,6 +8,7 @@ import com.oop.realtime_chat_app.repositories.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,20 +22,39 @@ public class RoomService {
     public static int getNextRoomId() {
         return roomIDIncrement++;
     }
-    public Room createRoom(CreateRoomBody roomBody) {
+
+    public void createRoom(CreateRoomBody roomBody) {
+        // Validate the input
+        if (roomBody == null || roomBody.getName() == null || roomBody.getCreatedBy() == null) {
+            throw new IllegalArgumentException("Invalid roomBody: Name and CreatedBy are required.");
+        }
+
+        // Create the initial message for the room creation
+        ChatMessage createRoomMessage = ChatMessage.builder()
+                .id(ChatService.getNextChatId())
+                .text(roomBody.getName() + " has been created")
+                .type(ChatMessage.MessageType.CREATE)
+                .datetime(LocalDateTime.now())
+                .build();
+
+        // Create the room and associate the message
         Room room = Room.builder()
                 .id(getNextRoomId())
                 .name(roomBody.getName())
                 .createdBy(roomBody.getCreatedBy())
-                .messages(new ArrayList<>())
+                .messages(new ArrayList<>()) // Initialize empty message list
                 .build();
 
+        // Add the initial message to the room's messages
+        room.getMessages().add(createRoomMessage);
+
+        // Persist the room
         room = roomRepository.save(room);
 
+        // Let the user join the room
         userService.joinRoom(roomBody.getCreatedBy(), room);
-
-        return room;
     }
+
 
     public void joinRoom(User user, Room room) {
         if (user == null || room == null) {
@@ -44,8 +64,8 @@ public class RoomService {
         user.setCurrentRoom(room);
         ChatMessage userEnterMessage = ChatMessage.builder()
                 .id(ChatService.getNextChatId())
-                .text(user.getUsername() + " has join the room")
                 .sender(user.getUsername())
+                .datetime(LocalDateTime.now())
                 .type(ChatMessage.MessageType.JOIN)
                 .build();
 
@@ -55,16 +75,29 @@ public class RoomService {
         System.out.println(user.getUsername() + " joining room: " + room.getName());
     }
 
-    public void enterRoom(User user, Room room) {
+    public Room enterRoom(User user, int roomId) {
+        Room room = getRoomById(roomId);
+        validateUserAndRoom(user, room);
+        addRoomToUser(user, room);
+        addUserEnterMessageToRoom(user, room);
+        System.out.println(user.getUsername() + " entered room: " + room.getName());
+        return room;
+    }
+
+    private void validateUserAndRoom(User user, Room room) {
         if (user == null || room == null) {
             throw new IllegalArgumentException("User or room cannot be null");
         }
+    }
 
+    private void addRoomToUser(User user, Room room) {
         List<Room> enteredRooms = user.getEnteredRooms();
         if (!enteredRooms.contains(room)) {
             enteredRooms.add(room);
         }
+    }
 
+    private void addUserEnterMessageToRoom(User user, Room room) {
         ChatMessage userEnterMessage = ChatMessage.builder()
                 .id(ChatService.getNextChatId())
                 .text(user.getUsername() + " has entered the room")
@@ -72,11 +105,9 @@ public class RoomService {
                 .type(ChatMessage.MessageType.ENTER)
                 .build();
 
-        List<ChatMessage> messages = room.getMessages();
-        messages.add(userEnterMessage);
-
-        System.out.println(user.getUsername() + " entered room: " + room.getName());
+        room.getMessages().add(userEnterMessage);
     }
+
 
     public Room getRoomById(int roomId) {
         return roomRepository.findById(roomId);

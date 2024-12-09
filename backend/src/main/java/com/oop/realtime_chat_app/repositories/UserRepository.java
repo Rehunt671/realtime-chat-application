@@ -34,9 +34,11 @@ public class UserRepository {
     public void deleteJoiningRoom(int roomId) {
         for (User user : userDatabase.values()) {
             List<Room> enteredRooms = user.getEnteredRooms();
-            // Remove the room with the matching ID
+            Room currentRoom = user.getCurrentRoom();
+            if(currentRoom != null && currentRoom.getId() == roomId) {
+                user.setCurrentRoom(null);
+            }
             enteredRooms.removeIf(room -> room.getId() == roomId);
-            // If there is a setter for enteredRooms, use it, otherwise directly update the list
             user.setEnteredRooms(new ArrayList<>(enteredRooms));
         }
     }
