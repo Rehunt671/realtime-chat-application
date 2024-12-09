@@ -6,8 +6,7 @@ interface LogoutButtonProps {
 }
 
 const LogoutButton: React.FC<LogoutButtonProps> = ({ text }) => {
-  const { logout } = useAuth(); 
-
+  const { logout } = useAuth();
   const handleLogout = async (e: React.FormEvent) => {
     e.preventDefault();
     logout();
@@ -35,7 +34,6 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ text }) => {
         </svg>
         {text}
       </button>
-
     </>
   );
 };

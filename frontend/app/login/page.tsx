@@ -1,12 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "hooks/useAuth"; // Import the custom hook
+import { useWebSocket } from "api/websocket/useWebsocket";
 
 const LoginPage: React.FC = () => {
-  const { login } = useAuth(); 
+  const { login } = useAuth();
+  const { disconnect } = useWebSocket();
   const [username, setUsername] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  useEffect(() => {
+    disconnect();
+  }, []);
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim() === "") {

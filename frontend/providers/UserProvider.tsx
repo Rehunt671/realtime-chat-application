@@ -3,7 +3,9 @@ import { useRouter } from "next/navigation";
 import { useWebSocket } from "api/websocket/useWebsocket";
 import LoadingSpinner from "@/components/LoadingSpinner";
 
-const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const UserProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { connect, isConnected, sendMessage } = useWebSocket();
   const router = useRouter();
   const [username, setUsername] = useState<string | null>(null);
@@ -13,9 +15,10 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     setUsername(storedUsername);
 
     if (!storedUsername) {
-      router.push("/login"); 
+      router.push("/login");
     } else {
       connect(storedUsername);
+      // router.push("/dashboard"); // on production uncomment this line
     }
   }, [router]);
 
@@ -25,8 +28,6 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     }
   }, [isConnected]);
 
-  if(!username) return <LoadingSpinner/>
-  
   return <>{children}</>;
 };
 

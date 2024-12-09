@@ -41,17 +41,18 @@ interface RoomCardProps {
 
 const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   const { sendMessage } = useWebSocket();
-  const userBody = useAppSelector(selectUser);
+  const user = useAppSelector(selectUser);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsModalOpen(true); 
+    setIsModalOpen(true);
   };
-  
+
   const handleDeleteConfirm = async () => {
-    sendMessage("/deleteRoom", room.id);
+    const deleteRoomBody = { roomId: room.id, deletedBy: user.username };
+    sendMessage("/deleteRoom", deleteRoomBody);
     setIsModalOpen(false);
   };
 
@@ -60,7 +61,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   };
 
   const handleJoinRoom = async (e: React.MouseEvent) => {
-    const joinRoomBody = { roomId: room.id, joinedBy: userBody.username };
+    const joinRoomBody = { roomId: room.id, joinedBy: user.username };
     try {
       sendMessage("/joinRoom", joinRoomBody);
       setIsModalOpen(false);
@@ -68,7 +69,6 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
       alert("Error joining room. Please try again.");
     }
   };
-  
 
   return (
     <>
@@ -82,7 +82,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
               <span className="text-sm text-gray-500">
                 Created by: {room.createdBy}
               </span>
-              {room.createdBy === userBody.username && (
+              {room.createdBy === user.username && (
                 <div>
                   <button
                     onClick={handleDeleteClick}

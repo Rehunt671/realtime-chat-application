@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useWebSocket } from "api/websocket/useWebsocket";
 
 export const useAuth = () => {
-  const {connect} = useWebSocket();
+  const { connect } = useWebSocket();
   const dispatch = useDispatch();
   const router = useRouter();
   const loginMutation = useMutationLogin();
@@ -20,8 +20,8 @@ export const useAuth = () => {
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("username", username);
 
-      connect(username)
-      
+      connect(username);
+
       router.push("/dashboard");
 
       return user;
@@ -34,7 +34,7 @@ export const useAuth = () => {
     dispatch(setUser(null));
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("username");
-    router.push("/login"); 
+    router.push("/login");
   };
 
   return { login, logout };
