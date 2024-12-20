@@ -30,7 +30,11 @@ const ChatMessageCard: React.FC<ChatMessageProps> = ({ msg }) => {
       case "CHAT":
         return <span className="text-gray-800">{msg.text}</span>;
       case "LEAVE":
-        return <span className="text-red-600 text-center">{msg.text}.</span>;
+        return (
+          <span className="text-red-600 text-center">
+            {msg.sender + " has leaved the chat"}
+          </span>
+        );
       case "EXIT":
         return <span className="text-yellow-600">{msg.text}</span>;
       default:

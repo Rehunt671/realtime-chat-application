@@ -45,7 +45,6 @@ const ChatRoom: React.FC = () => {
       const updatedRoom = JSON.parse(payload.body);
       setRoom(updatedRoom);
     };
-    console.log("subscribe room");
     client.subscribe(`/topic/room/${room.id}`, onUpdateRoom);
   }, [room]);
 
@@ -66,13 +65,8 @@ const ChatRoom: React.FC = () => {
   };
 
   const handleLeaveRoom = () => {
-    // Unsubscribe from the room's topic and update the user's state
     client.unsubscribe(`/topic/room/${room.id}`);
-    const updateUserBody = { ...user, currentRoom: null };
-    sendMessage("/updateUser", updateUserBody);
-
-    // Redirect to dashboard or another appropriate page
-    redirect("/dashboard");
+    sendMessage("/leaveRoom", { roomId: room.id, leavedBy: user.username });
   };
 
   if (!user) return <LoadingSpinner />;
@@ -82,7 +76,7 @@ const ChatRoom: React.FC = () => {
       <div className="w-full max-w-3xl space-y-8 bg-white shadow-lg rounded-lg p-8 border border-gray-200">
         <div className="flex justify-between items-center mb-6">
           <button
-            onClick={handleLeaveRoom} // Adjust this to the appropriate handler
+            onClick={handleLeaveRoom}
             className="bg-transparent p-2 rounded-full hover:bg-gray-100 transition-all duration-300 focus:outline-none"
           >
             <svg

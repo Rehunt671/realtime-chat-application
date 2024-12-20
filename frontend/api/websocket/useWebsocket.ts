@@ -53,6 +53,7 @@ export const useWebSocket = () => {
     stompClient.subscribe(`/user/${username}/topic/createRoom`, onCreateRoom);
     stompClient.subscribe(`/user/${username}/topic/enterRoom`, onEnterRoom);
     stompClient.subscribe(`/user/${username}/topic/joinRoom`, onJoinRoom);
+    stompClient.subscribe(`/user/${username}/topic/leaveRoom`, onLeaveRoom);
     stompClient.subscribe(`/user/${username}/topic/exitRoom`, onExitRoom);
     stompClient.subscribe("/topic/deleteRoom", onDeleteRoom);
     dispatch(setWebSocketClient(stompClient));
@@ -103,6 +104,12 @@ export const useWebSocket = () => {
     const user = JSON.parse(payload.body);
     dispatch(setUser(user));
     redirect(`/room/${user.currentRoom.id}`);
+  };
+
+  const onLeaveRoom = (payload: Stomp.Message) => {
+    const user = JSON.parse(payload.body);
+    dispatch(setUser(user));
+    redirect(`/dashboard`);
   };
 
   const onEnterRoom = (payload: Stomp.Message) => {
