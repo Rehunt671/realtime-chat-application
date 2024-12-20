@@ -6,7 +6,7 @@ import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 import { selectWebsocket } from "stores/slices/webSocketSlice";
 import Stomp from "stompjs";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 import { redirect } from "next/navigation";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 const ChatRoom: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "../modals/Modal";
 import { selectUser } from "stores/slices/userSlice";
 import { useAppSelector } from "stores/hook";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 
 interface CreateRoomButtonProps {
   text: string;

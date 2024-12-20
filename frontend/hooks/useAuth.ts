@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "stores/slices/userSlice";
 import { useMutationLogin } from "api/auth";
 import { useRouter } from "next/navigation";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 
 export const useAuth = () => {
   const { connect } = useWebSocket();

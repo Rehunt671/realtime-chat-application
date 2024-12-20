@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from "../modals/Modal";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 import { selectUser } from "stores/slices/userSlice";
 import { useAppSelector } from "stores/hook";
 
@@ -33,7 +33,7 @@ const EnterRoomButton: React.FC<EnterRoomButtonProps> = ({ text }) => {
       return;
     }
 
-    const enterRoomBody = {roomId: roomId , enteredBy: user.username}
+    const enterRoomBody = { roomId: roomId, enteredBy: user.username };
     try {
       sendMessage("/enterRoom", enterRoomBody);
       setRoomId("");

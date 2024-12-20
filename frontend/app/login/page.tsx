@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useAuth } from "hooks/useAuth";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 
 const LoginPage: React.FC = () => {
   const { login } = useAuth();

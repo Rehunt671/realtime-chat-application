@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDoorOpen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
-import { useWebSocket } from "api/websocket/useWebsocket";
+import { useWebSocket } from "hooks/useWebsocket";
 
 const Modal = ({ isOpen, onClose, onConfirm, message }) => {
   if (!isOpen) return null;
