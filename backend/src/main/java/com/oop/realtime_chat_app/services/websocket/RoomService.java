@@ -75,6 +75,22 @@ public class RoomService {
         System.out.println(user.getUsername() + " joining room: " + room.getName());
     }
 
+    public void leaveRoom(User user , Room room){
+        if (user == null || room == null) {
+            throw new IllegalArgumentException("User or room cannot be null");
+        }
+        user.setCurrentRoom(null);
+        ChatMessage leaveRoomMessage = ChatMessage.builder()
+                .id(ChatService.getNextChatId())
+                .sender(user.getUsername())
+                .datetime(LocalDateTime.now())
+                .type(ChatMessage.MessageType.LEAVE)
+                .build();
+        List<ChatMessage> messages = room.getMessages();
+        messages.add(leaveRoomMessage);
+        System.out.println(user.getUsername() + " leave room: " + room.getName());
+    }
+
     public void exitRoom(User user , Room room){
         if (user == null || room == null) {
             throw new IllegalArgumentException("User or room cannot be null");

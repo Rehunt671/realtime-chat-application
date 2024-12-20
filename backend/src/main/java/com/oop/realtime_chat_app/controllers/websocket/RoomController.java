@@ -2,7 +2,6 @@ package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.db.Database;
 import com.oop.realtime_chat_app.dtos.room.*;
-import com.oop.realtime_chat_app.models.ChatMessage;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
 import com.oop.realtime_chat_app.services.websocket.RoomService;
@@ -13,7 +12,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -64,6 +62,19 @@ public class RoomController {
         messagingTemplate.convertAndSendToUser(username, "/topic/joinRoom", user);
         messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
     }
+
+    @MessageMapping("/leaveRoom")
+    public void leaveRoom(LeaveRoomBody leaveRoomBody) {
+        int roomId = leaveRoomBody.getRoomId();
+        String username = leaveRoomBody.getLeavedBy();
+        User user = userService.getUser(username);
+        Room room = roomService.getRoomById(roomId);
+
+        roomService.leaveRoom(user, room);
+        messagingTemplate.convertAndSendToUser(username, "/topic/leaveRoom", user);
+        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
+    }
+
 
     @MessageMapping("/exitRoom")
     public void exitRoom(ExitRoomBody exitRoomBody) {
