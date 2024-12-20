@@ -75,11 +75,35 @@ public class RoomService {
         System.out.println(user.getUsername() + " joining room: " + room.getName());
     }
 
+    public void exitRoom(User user , Room room){
+        if (user == null || room == null) {
+            throw new IllegalArgumentException("User or room cannot be null");
+        }
+        userService.leaveRoom(room.getId());
+        ChatMessage exitRoomMessage = ChatMessage.builder()
+                .id(ChatService.getNextChatId())
+                .sender(user.getUsername())
+                .datetime(LocalDateTime.now())
+                .type(ChatMessage.MessageType.EXIT)
+                .build();
+        List<ChatMessage> messages = room.getMessages();
+        messages.add(exitRoomMessage);
+        System.out.println(user.getUsername() + " exit room: " + room.getName());
+    }
+
+
     public Room enterRoom(User user, int roomId) {
         Room room = getRoomById(roomId);
         validateUserAndRoom(user, room);
         addRoomToUser(user, room);
-        addUserEnterMessageToRoom(user, room);
+        ChatMessage userEnterMessage = ChatMessage.builder()
+                .id(ChatService.getNextChatId())
+                .text(user.getUsername() + " has entered the room")
+                .sender(user.getUsername())
+                .type(ChatMessage.MessageType.ENTER)
+                .build();
+
+        room.getMessages().add(userEnterMessage);
         System.out.println(user.getUsername() + " entered room: " + room.getName());
         return room;
     }
@@ -97,18 +121,6 @@ public class RoomService {
         }
     }
 
-    private void addUserEnterMessageToRoom(User user, Room room) {
-        ChatMessage userEnterMessage = ChatMessage.builder()
-                .id(ChatService.getNextChatId())
-                .text(user.getUsername() + " has entered the room")
-                .sender(user.getUsername())
-                .type(ChatMessage.MessageType.ENTER)
-                .build();
-
-        room.getMessages().add(userEnterMessage);
-    }
-
-
     public Room getRoomById(int roomId) {
         return roomRepository.findById(roomId);
     }
@@ -117,4 +129,5 @@ public class RoomService {
         userService.leaveRoom(roomId);
         roomRepository.deleteRoomById(roomId);
     }
+
 }

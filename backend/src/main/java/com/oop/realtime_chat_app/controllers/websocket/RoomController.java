@@ -1,10 +1,7 @@
 package com.oop.realtime_chat_app.controllers.websocket;
 
 import com.oop.realtime_chat_app.db.Database;
-import com.oop.realtime_chat_app.dtos.room.CreateRoomBody;
-import com.oop.realtime_chat_app.dtos.room.DeleteRoomBody;
-import com.oop.realtime_chat_app.dtos.room.EnterRoomBody;
-import com.oop.realtime_chat_app.dtos.room.JoinRoomBody;
+import com.oop.realtime_chat_app.dtos.room.*;
 import com.oop.realtime_chat_app.models.ChatMessage;
 import com.oop.realtime_chat_app.models.Room;
 import com.oop.realtime_chat_app.models.User;
@@ -68,6 +65,19 @@ public class RoomController {
         messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
     }
 
+    @MessageMapping("/exitRoom")
+    public void exitRoom(ExitRoomBody exitRoomBody) {
+        int roomId = exitRoomBody.getRoomId();
+        String username = exitRoomBody.getExitedBy();
+        User user = userService.getUser(username);
+        Room room = roomService.getRoomById(roomId);
+
+        // Call the exitRoom method in RoomService
+        roomService.exitRoom(user, room);
+        // Notify the user and other participants
+        messagingTemplate.convertAndSendToUser(username, "/topic/exitRoom", user);
+        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), room);
+    }
 
     @MessageMapping("/getRoom")
     @SendTo("/topic/getRoom")
