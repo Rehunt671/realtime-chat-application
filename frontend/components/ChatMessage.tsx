@@ -48,17 +48,26 @@ const ChatMessageCard: React.FC<ChatMessageProps> = ({ msg }) => {
     : "justify-start";
 
   return (
-    <div key={msg.id} className={`${itemAlignment} flex space-x-3`}>
+    <div
+      key={msg.id}
+      className={`${itemAlignment} flex items-start space-x-3 p-2`}
+    >
       {isChatMessage && (
-        <div className="bg-blue-600 h-10 w-10 flex items-center justify-center rounded-full text-white font-bold uppercase">
-          {msg.sender}
-          <span className="block text-sm text-gray-500 text-center">
-            {FormatChatDate(msg.datetime)}
-          </span>
+        <div className="flex flex-col justify-center">
+          <div className="h-12 w-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white font-semibold uppercase shadow-md border-2 border-white">
+            {msg.sender.charAt(0)}
+          </div>
         </div>
       )}
-      <div className="flex justify-center items-center text-gray-800 bg-white px-3 py-2 rounded-lg shadow-md">
-        {renderMessageContent()}
+      <div className="max-w-sm bg-white px-4 py-3 rounded-xl shadow-lg border border-gray-200">
+        <p className="text-gray-800 leading-relaxed break-words whitespace-pre-wrap">
+          {renderMessageContent()}
+        </p>
+        {isChatMessage && (
+          <span className="block mt-2 text-xs text-gray-500 text-right">
+            {FormatChatDate(msg.datetime)}
+          </span>
+        )}
       </div>
     </div>
   );

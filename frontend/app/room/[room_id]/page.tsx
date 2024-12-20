@@ -1,16 +1,15 @@
 "use client";
 import ChatMessageCard from "@/components/ChatMessage";
 import LoadingSpinner from "@/components/LoadingSpinner";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 import { selectWebsocket } from "stores/slices/webSocketSlice";
 import Stomp from "stompjs";
 import { useWebSocket } from "api/websocket/useWebsocket";
 import { redirect } from "next/navigation";
-
+import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 const ChatRoom: React.FC = () => {
-  console.log("init variable");
   const { client } = useAppSelector(selectWebsocket);
   const { sendMessage } = useWebSocket();
   const [newMessage, setNewMessage] = useState("");
@@ -18,9 +17,19 @@ const ChatRoom: React.FC = () => {
   const [room, setRoom] = useState(user?.currentRoom);
   const messages = room?.messages || [];
 
+  // Create a ref for the chat container to scroll to the bottom
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to the bottom when messages change
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   useEffect(() => {
     return () => {
-      // run only component unmount
       const updateUserBody = { ...user, currentRoom: null };
       client.unsubscribe(`/topic/room/${room.id}`);
       sendMessage("/updateUser", updateUserBody);
@@ -41,6 +50,7 @@ const ChatRoom: React.FC = () => {
   }, [room]);
 
   const handleSendMessage = () => {
+    if (!newMessage) return;
     sendMessage("/sendChatMessage", {
       sender: user.username,
       text: newMessage,
@@ -55,27 +65,58 @@ const ChatRoom: React.FC = () => {
     });
   };
 
+  const handleLeaveRoom = () => {
+    // Unsubscribe from the room's topic and update the user's state
+    client.unsubscribe(`/topic/room/${room.id}`);
+    const updateUserBody = { ...user, currentRoom: null };
+    sendMessage("/updateUser", updateUserBody);
+
+    // Redirect to dashboard or another appropriate page
+    redirect("/dashboard");
+  };
+
   if (!user) return <LoadingSpinner />;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
-      {/* Chat Room Content */}
       <div className="w-full max-w-3xl space-y-8 bg-white shadow-lg rounded-lg p-8 border border-gray-200">
-        {/* Header Section */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-4xl font-semibold text-gradient bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500">
+          <button
+            onClick={handleLeaveRoom} // Adjust this to the appropriate handler
+            className="bg-transparent p-2 rounded-full hover:bg-gray-100 transition-all duration-300 focus:outline-none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="h-8 w-8 text-gray-600 hover:text-red-500"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"
+              />
+            </svg>
+          </button>
+
+          <h2 className="text-4xl font-semibold text-gradient bg-clip-text bg-gradient-to-r from-blue-500 to-teal-500 mx-auto">
             {room?.name}
           </h2>
+
           <button
             onClick={handleCopyRoomID}
-            className="bg-gradient-to-r from-teal-500 to-teal-700 text-white py-2 px-4 rounded-lg hover:bg-gradient-to-l transition-all duration-300"
+            className="bg-gradient-to-r from-teal-500 to-teal-700 text-white py-2 px-4 rounded-lg hover:bg-gradient-to-l hover:scale-95 transition-all duration-200"
           >
             Copy Room ID
           </button>
         </div>
 
-        {/* Messages Section */}
-        <div className="h-96 overflow-y-auto bg-gray-100 rounded-lg p-4 border-2 border-gray-300 shadow-sm">
+        <div
+          ref={chatContainerRef}
+          className="h-96 overflow-y-auto bg-gradient-to-br from-teal-50 to-indigo-50 rounded-lg p-4 border-2 border-gray-300 shadow-md"
+        >
           <ul className="space-y-6">
             {messages.map((msg, index) => (
               <ChatMessageCard key={index} msg={msg} />
@@ -83,7 +124,6 @@ const ChatRoom: React.FC = () => {
           </ul>
         </div>
 
-        {/* Send New Message Section */}
         <div className="flex items-center space-x-4 mt-4">
           <input
             type="text"
@@ -96,7 +136,7 @@ const ChatRoom: React.FC = () => {
             onClick={handleSendMessage}
             className="bg-gradient-to-r from-pink-500 to-yellow-500 text-white py-3 px-6 rounded-lg hover:bg-gradient-to-l hover:from-pink-600 hover:to-yellow-600 transition-all"
           >
-            Send
+            <PaperAirplaneIcon className="h-6 w-6 text-white transform " />
           </button>
         </div>
       </div>

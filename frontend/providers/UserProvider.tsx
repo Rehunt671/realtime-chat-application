@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWebSocket } from "api/websocket/useWebsocket";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -18,9 +17,9 @@ const UserProvider: React.FC<{ children: React.ReactNode }> = ({
       router.push("/login");
     } else {
       connect(storedUsername);
-      // router.push("/dashboard"); // on production uncomment this line
+      // router.push("/dashboard");
     }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (isConnected && username) {

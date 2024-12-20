@@ -2,20 +2,18 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Room } from "types/room";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+import { faDoorOpen, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useAppSelector } from "stores/hook";
 import { selectUser } from "stores/slices/userSlice";
 import { useWebSocket } from "api/websocket/useWebsocket";
 
-const Modal = ({ isOpen, onClose, onConfirm }) => {
+const Modal = ({ isOpen, onClose, onConfirm, message }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Are you sure you want to delete this room?
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">{message}</h3>
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}
@@ -43,20 +41,37 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   const { sendMessage } = useWebSocket();
   const user = useAppSelector(selectUser);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [action, setAction] = useState<"delete" | "exit">();
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    setModalMessage("Are you sure you want to delete this room?");
+    setAction("delete");
     setIsModalOpen(true);
   };
 
-  const handleDeleteConfirm = async () => {
-    const deleteRoomBody = { roomId: room.id, deletedBy: user.username };
-    sendMessage("/deleteRoom", deleteRoomBody);
-    setIsModalOpen(false);
+  const handleExitClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setModalMessage("Are you sure you want to exit this room?");
+    setAction("exit");
+    setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    if (action === "delete") {
+      const deleteRoomBody = { roomId: room.id, deletedBy: user.username };
+      sendMessage("/deleteRoom", deleteRoomBody);
+    } else if (action === "exit") {
+      const exitRoomBody = { roomId: room.id, exitedBy: user.username };
+      sendMessage("/exitRoom", exitRoomBody);
+    }
     setIsModalOpen(false);
   };
 
@@ -64,7 +79,6 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
     const joinRoomBody = { roomId: room.id, joinedBy: user.username };
     try {
       sendMessage("/joinRoom", joinRoomBody);
-      setIsModalOpen(false);
     } catch (error) {
       alert("Error joining room. Please try again.");
     }
@@ -82,7 +96,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
               <span className="text-sm text-gray-500">
                 Created by: {room.createdBy}
               </span>
-              {room.createdBy === user.username && (
+              {room.createdBy === user.username ? (
                 <div>
                   <button
                     onClick={handleDeleteClick}
@@ -92,6 +106,14 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                     <FontAwesomeIcon icon={faTrashAlt} className="h-4 w-4" />
                   </button>
                 </div>
+              ) : (
+                <button
+                  onClick={handleExitClick}
+                  className="text-white bg-red-500 hover:bg-red-700 transition-colors duration-300 px-4 py-2 rounded-lg shadow-md hover:shadow-lg flex items-center space-x-2"
+                  aria-label="Exit Room"
+                >
+                  <FontAwesomeIcon icon={faDoorOpen} className="h-5 w-5" />
+                </button>
               )}
             </div>
           </div>
@@ -101,7 +123,8 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
       <Modal
         isOpen={isModalOpen}
         onClose={handleModalClose}
-        onConfirm={handleDeleteConfirm}
+        onConfirm={handleConfirm}
+        message={modalMessage}
       />
     </>
   );
