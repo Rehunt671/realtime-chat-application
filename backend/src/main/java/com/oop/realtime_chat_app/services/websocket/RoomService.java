@@ -95,7 +95,7 @@ public class RoomService {
         if (user == null || room == null) {
             throw new IllegalArgumentException("User or room cannot be null");
         }
-        userService.leaveRoom(room.getId());
+        userService.deleteRoomForAllUsers(room.getId());
         ChatMessage exitRoomMessage = ChatMessage.builder()
                 .id(ChatService.getNextChatId())
                 .sender(user.getUsername())
@@ -142,7 +142,7 @@ public class RoomService {
     }
 
     public void deleteRoomById(int roomId) {
-        userService.leaveRoom(roomId);
+        userService.deleteRoomForAllUsers(roomId);
         roomRepository.deleteRoomById(roomId);
     }
 

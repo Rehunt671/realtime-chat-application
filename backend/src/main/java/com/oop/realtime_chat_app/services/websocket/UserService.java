@@ -33,9 +33,10 @@ public class UserService {
         updateUser(user);
     }
 
-    public void leaveRoom(int roomId) {
+    public void deleteRoomForAllUsers(int roomId) {
         userRepository.deleteJoiningRoom(roomId);
     }
+
 
     public List<Room> getUserRooms(String username) {
         return userRepository.getUserRooms(username);

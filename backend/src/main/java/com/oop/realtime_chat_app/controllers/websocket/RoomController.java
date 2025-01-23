@@ -100,10 +100,8 @@ public class RoomController {
     @SendTo("/topic/deleteRoom")
     public Map<String, User> deleteRoom(DeleteRoomBody deleteRoomBody) {
         int roomId = deleteRoomBody.getRoomId();
-        String username = deleteRoomBody.getDeletedBy();
-
         roomService.deleteRoomById(roomId);
-
+        userService.deleteRoomForAllUsers(roomId);
         Map<String, Boolean> roomDeletedMessage = Map.of(
                 "status" , true
         );
