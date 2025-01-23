@@ -1,7 +1,9 @@
 "use client";
 
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+
 const App = () => {
   const router = useRouter();
 
@@ -12,7 +14,9 @@ const App = () => {
     } else {
       router.push("/dashboard");
     }
-  }, [router]);
+  }, []);
+
+  return <LoadingSpinner/>;
 };
 
 export default App;

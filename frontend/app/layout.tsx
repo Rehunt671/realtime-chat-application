@@ -12,15 +12,15 @@ interface RootLayoutProps {
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const pathname = usePathname();
-  const isLoginPage = pathname === "/login";
+  const isLoginPageOrRootPage = pathname === "/login" || pathname === "/";
 
   return (
     <html lang="en">
       <body>
         <AppProvider>
           <UserProvider>
-          {!isLoginPage && <Navbar />}
-          <main>{children}</main>
+            {!isLoginPageOrRootPage && <Navbar />}
+            <main>{children}</main>
           </UserProvider>
         </AppProvider>
       </body>
