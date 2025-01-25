@@ -33,6 +33,7 @@ public class UserRepository {
 
     public void deleteJoiningRoom(int roomId) {
         for (User user : userDatabase.values()) {
+            String username = user.getUsername();
             List<Room> enteredRooms = user.getEnteredRooms();
             Room currentRoom = user.getCurrentRoom();
             if(currentRoom != null && currentRoom.getId() == roomId) {
@@ -40,6 +41,9 @@ public class UserRepository {
             }
             enteredRooms.removeIf(room -> room.getId() == roomId);
             user.setEnteredRooms(new ArrayList<>(enteredRooms));
+            if (userDatabase.containsKey(username)) {
+                userDatabase.put(username, user);
+            }
         }
     }
 

@@ -65,16 +65,26 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
   };
 
   const handleConfirm = async () => {
-    if (action === "delete") {
-      const deleteRoomBody = { roomId: room.id, deletedBy: user.username };
-      sendMessage("/deleteRoom", deleteRoomBody);
-    } else if (action === "exit") {
-      const exitRoomBody = { roomId: room.id, exitedBy: user.username };
-      sendMessage("/exitRoom", exitRoomBody);
+    let requestBody = null;
+  
+    switch (action) {
+      case "delete":
+        requestBody = { roomId: room.id, deletedBy: user.username };
+        sendMessage("/deleteRoom", requestBody);
+        break;
+  
+      case "exit":
+        requestBody = { roomId: room.id, exitedBy: user.username };
+        sendMessage("/exitRoom", requestBody);
+        break;
+  
+      default:
+        console.warn("Unhandled action:", action);
     }
+  
     setIsModalOpen(false);
   };
-
+  
   const handleJoinRoom = async (e: React.MouseEvent) => {
     const joinRoomBody = { roomId: room.id, joinedBy: user.username };
     try {
@@ -100,7 +110,7 @@ const RoomCard: React.FC<RoomCardProps> = ({ room }) => {
                 <div>
                   <button
                     onClick={handleDeleteClick}
-                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                    className="text-white bg-red-500 hover:bg-red-700 transition-colors duration-300 px-4 py-2 rounded-lg shadow-md hover:shadow-lg flex items-center space-x-2"
                     aria-label="Delete Room"
                   >
                     <FontAwesomeIcon icon={faTrashAlt} className="h-4 w-4" />

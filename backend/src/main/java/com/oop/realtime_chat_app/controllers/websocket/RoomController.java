@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -101,11 +102,7 @@ public class RoomController {
     public Map<String, User> deleteRoom(DeleteRoomBody deleteRoomBody) {
         int roomId = deleteRoomBody.getRoomId();
         roomService.deleteRoomById(roomId);
-        userService.deleteRoomForAllUsers(roomId);
-        Map<String, Boolean> roomDeletedMessage = Map.of(
-                "status" , true
-        );
-        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), roomDeletedMessage);
+        messagingTemplate.convertAndSend(String.format("/topic/room/%d", roomId), Optional.empty());
         return Database.getInstance().getUserDatabase();
     }
 }

@@ -68,7 +68,6 @@ export const useWebSocket = () => {
         console.warn(response.error);
         redirect("/login");
       }
-
       dispatch(setUser(response));
     } catch (error) {
       console.error("Failed to parse payload body:", error);

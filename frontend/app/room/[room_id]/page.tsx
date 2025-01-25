@@ -16,12 +16,9 @@ const ChatRoom: React.FC = () => {
   const user = useAppSelector(selectUser);
   const [room, setRoom] = useState(user?.currentRoom);
   const messages = room?.messages || [];
-
-  // Create a ref for the chat container to scroll to the bottom
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Scroll to the bottom when messages change
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
@@ -29,23 +26,21 @@ const ChatRoom: React.FC = () => {
   }, [messages]);
 
   useEffect(() => {
-    return () => {
-      const updateUserBody = { ...user, currentRoom: null };
-      client.unsubscribe(`/topic/room/${room.id}`);
-      sendMessage("/updateUser", updateUserBody);
-    };
-  }, []);
-
-  useEffect(() => {
-    const onUpdateRoom = (payload: Stomp.Message) => {
-      if (payload.body.status) {
-        sendMessage("/getMe", user.username);
-        redirect("/dashboard");
-      }
+    console.log(room)
+    if(!room) {
+      sendMessage("/getMe", user.username);
+      redirect("/dashboard");
+    }
+    const onManipulateRoom = (payload: Stomp.Message) => {
       const updatedRoom = JSON.parse(payload.body);
       setRoom(updatedRoom);
     };
-    client.subscribe(`/topic/room/${room.id}`, onUpdateRoom);
+    const subscription = client.subscribe(`/topic/room/${room.id}`, onManipulateRoom);
+  return () => {
+    const updateUserBody = { ...user, currentRoom: null };
+    subscription.unsubscribe();
+    sendMessage("/updateUser", updateUserBody);
+  };
   }, [room]);
 
   const handleSendMessage = () => {

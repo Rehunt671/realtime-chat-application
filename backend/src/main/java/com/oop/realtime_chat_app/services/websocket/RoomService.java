@@ -24,12 +24,10 @@ public class RoomService {
     }
 
     public void createRoom(CreateRoomBody roomBody) {
-        // Validate the input
         if (roomBody == null || roomBody.getName() == null || roomBody.getCreatedBy() == null) {
             throw new IllegalArgumentException("Invalid roomBody: Name and CreatedBy are required.");
         }
 
-        // Create the initial message for the room creation
         ChatMessage createRoomMessage = ChatMessage.builder()
                 .id(ChatService.getNextChatId())
                 .text(roomBody.getName() + " has been created")
@@ -37,7 +35,6 @@ public class RoomService {
                 .datetime(LocalDateTime.now())
                 .build();
 
-        // Create the room and associate the message
         Room room = Room.builder()
                 .id(getNextRoomId())
                 .name(roomBody.getName())
@@ -45,13 +42,10 @@ public class RoomService {
                 .messages(new ArrayList<>()) // Initialize empty message list
                 .build();
 
-        // Add the initial message to the room's messages
         room.getMessages().add(createRoomMessage);
 
-        // Persist the room
         room = roomRepository.save(room);
 
-        // Let the user join the room
         userService.joinRoom(roomBody.getCreatedBy(), room);
     }
 
