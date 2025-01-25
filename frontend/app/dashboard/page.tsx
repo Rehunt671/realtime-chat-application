@@ -3,15 +3,12 @@ import CreateRoomButton from "@/components/buttons/CreateRoomButton";
 import EnterRoomButton from "@/components/buttons/EnterRoomButton";
 import LogoutButton from "@/components/buttons/LogoutButton";
 import RoomCard from "@/components/RoomCard";
-import { useEffect } from "react";
 import { useAppSelector } from "stores/hook";
-import { selectUser } from "stores/slices/userSlice";
+import { selectUser, setUser } from "stores/slices/userSlice";
 
 const Dashboard: React.FC = () => {
   const user = useAppSelector(selectUser);
   const userRooms = user?.enteredRooms || [];
-
-  useEffect(() => {}, [user]);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 p-8 items-center">

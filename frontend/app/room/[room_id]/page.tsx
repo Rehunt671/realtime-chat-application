@@ -26,8 +26,7 @@ const ChatRoom: React.FC = () => {
   }, [messages]);
 
   useEffect(() => {
-    console.log(room)
-    if(!room) {
+    if (!room) {
       sendMessage("/getMe", user.username);
       redirect("/dashboard");
     }
@@ -35,12 +34,13 @@ const ChatRoom: React.FC = () => {
       const updatedRoom = JSON.parse(payload.body);
       setRoom(updatedRoom);
     };
-    const subscription = client.subscribe(`/topic/room/${room.id}`, onManipulateRoom);
-  return () => {
-    const updateUserBody = { ...user, currentRoom: null };
-    subscription.unsubscribe();
-    sendMessage("/updateUser", updateUserBody);
-  };
+    const subscription = client.subscribe(
+      `/topic/room/${room.id}`,
+      onManipulateRoom
+    );
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [room]);
 
   const handleSendMessage = () => {
